@@ -4,11 +4,15 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineHabitCompletionRepository(private val habitCompletionDao: HabitCompletionDao) : HabitCompletionRepository {
     override suspend fun insertHabitCompletion(habitCompletion: HabitCompletion) = habitCompletionDao.insert(habitCompletion)
+//    override suspend fun updateHabitCompletion(
+//        habitId: Int,
+//        date: Long,
+//        isCompleted: Boolean,
+//        progressValue: Float
+//    ) = habitCompletionDao.update(habitId, date, isCompleted, progressValue)
 
-    override suspend fun updateHabitCompletion(habitCompletion: HabitCompletion) = habitCompletionDao.update(habitCompletion)
+    override suspend fun deleteHabitCompletion(habitId: Int) = habitCompletionDao.deleteAllByHabitId(habitId)
 
-    override suspend fun deleteHabitCompletion(habitCompletion: HabitCompletion) = habitCompletionDao.delete(habitCompletion)
-
-    override fun getAllCompletionDetailsStream(habitId: Int): Flow<List<HabitCompletion>> = habitCompletionDao.getAllCompletionDetails(habitId)
+    override fun getAllCompletionDetailsStream(): Flow<List<HabitCompletion>> = habitCompletionDao.getAllCompletionDetails()
 
 }

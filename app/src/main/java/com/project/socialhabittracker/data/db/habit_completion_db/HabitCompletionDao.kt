@@ -13,12 +13,13 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(habitCompletion: HabitCompletion)
 
-    @Update
-    suspend fun update(habitCompletion: HabitCompletion)
+//    @Query("UPDATE habit_completion SET is_completed = :isCompleted, progress_value = :progressValue " +
+//            "WHERE habit_id = :habitId AND date = :date")
+//    suspend fun update(habitId: Int, date: Long, isCompleted: Boolean, progressValue: Float)
 
-    @Delete
-    suspend fun delete(habitCompletion: HabitCompletion)
+    @Query("DELETE FROM habit_completion WHERE habit_id = :habitId")
+    suspend fun deleteAllByHabitId(habitId: Int)
 
-    @Query("SELECT * FROM habit_completion WHERE habit_id == :habitId")
-    fun getAllCompletionDetails(habitId: Int): Flow<List<HabitCompletion>>
+    @Query("SELECT * FROM habit_completion")
+    fun getAllCompletionDetails(): Flow<List<HabitCompletion>>
 }

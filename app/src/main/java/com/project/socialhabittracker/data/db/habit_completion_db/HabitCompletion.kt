@@ -13,12 +13,12 @@ import com.project.socialhabittracker.data.db.habit_db.Habit
         parentColumns = ["id"],
         childColumns = ["habit_id"],
         onDelete = ForeignKey.CASCADE
-    )]
+    )],
+    primaryKeys = ["habit_id", "date"]
 )
 data class HabitCompletion(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "habit_id") val habitId: Int, // Foreign key to Habit table
     @ColumnInfo(name = "date") val date: Long, // Store date as timestamp
-    @ColumnInfo(name = "is_completed") val isCompleted: Boolean?, // For "yes_no" habits
-    @ColumnInfo(name = "progress_value") val progressValue: Float? = null // For "measurable" habits
+    @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false, // For "yes_no" habits
+    @ColumnInfo(name = "progress_value") val progressValue: Float = 0f // For "measurable" habits
 )

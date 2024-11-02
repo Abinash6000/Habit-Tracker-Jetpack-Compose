@@ -20,27 +20,28 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class HomeViewModel(habitRepository: HabitRepository, habitCompletionRepository: HabitCompletionRepository) : ViewModel() {
+class HomeViewModel(private val habitRepository: HabitRepository, private val habitCompletionRepository: HabitCompletionRepository) : ViewModel() {
     // Using a MutableStateFlow to hold the HomeUiState
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
     init {
-        // Launch a coroutine in viewModelScope to fetch and update homeUiState
+        // Launch a coroutine to fetch and update homeUiState
         viewModelScope.launch {
-            habitRepository.getAllHabitsStream().collect { habits ->
-                // Concurrently fetch completion details for each habit
-                val habitInfoList = habits.map { habit ->
-                    async {
-                        val completionDetails = habitCompletionRepository.getAllCompletionDetailsStream(habit.id)
-                            .firstOrNull() ?: emptyList()
-                        HabitInfo(habit, completionDetails)
-                    }
-                }.awaitAll() // Await all async results to get the complete list
-
-                // Update the HomeUiState with the fetched HabitInfo list
+            habitRepository.getAllHabitsStream().combine(habitCompletionRepository.getAllCompletionDetailsStream()) { habits, completions ->
+                habits.map { habit ->
+                    val completionDetails = completions.filter { it.habitId == habit.id }
+                    HabitInfo(habit, completionDetails)
+                }
+            }.collect { habitInfoList ->
                 _homeUiState.value = HomeUiState(habitInfoList)
             }
+        }
+    }
+
+    fun upsert(habitCompletion: HabitCompletion) {
+        viewModelScope.launch {
+            habitCompletionRepository.insertHabitCompletion(habitCompletion)
         }
     }
 }
