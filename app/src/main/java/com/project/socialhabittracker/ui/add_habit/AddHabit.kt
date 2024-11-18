@@ -161,9 +161,9 @@ fun AddHabitBody(
 
         // Target Field
         OutlinedTextField(
-            value = addHabitUiState.habit.targetCount.toString(),
+            value = addHabitUiState.habit.targetCount,
             onValueChange = {
-                onItemValueChange(addHabitUiState.habit.copy(targetCount = it.toIntOrNull() ?: 0))
+                onItemValueChange(addHabitUiState.habit.copy(targetCount = it))
             },
             label = { Text("Target") },
             modifier = Modifier.fillMaxWidth(),

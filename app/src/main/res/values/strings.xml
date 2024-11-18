@@ -3,4 +3,5 @@
     <string name="back_button">Back</string>
     <string name="add_habit_title">Add Habit</string>
     <string name="add_your_habits_by_clicking_on">Add your habits\nby clicking on +</string>
+    <string name="habit_report_title">Habit Report</string>
 </resources>

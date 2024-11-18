@@ -51,6 +51,6 @@ data class HomeUiState(
 )
 
 data class HabitInfo(
-    val habit: Habit,
-    val habitCompletionDetails: List<HabitCompletion>
+    val habit: Habit = Habit(),
+    val habitCompletionDetails: List<HabitCompletion> = listOf()
 )

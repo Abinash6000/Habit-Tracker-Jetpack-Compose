@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.project.socialhabittracker.HabitTrackerApplication
 import com.project.socialhabittracker.ui.add_habit.AddHabitViewModel
+import com.project.socialhabittracker.ui.habit_report.HabitReportViewModel
 import com.project.socialhabittracker.ui.home.HomeViewModel
 
 object AppViewModelProvider {
@@ -25,23 +26,14 @@ object AppViewModelProvider {
                 habitTrackerApplication().container.habitRepository
             )
         }
-//        // Initializer for ItemEntryViewModel
-//        initializer {
-//            ItemEntryViewModel(inventoryApplication().container.itemsRepository)
-//        }
-//
-//        // Initializer for ItemDetailsViewModel
-//        initializer {
-//            ItemDetailsViewModel(
-//                this.createSavedStateHandle(),
-//                inventoryApplication().container.itemsRepository
-//            )
-//        }
-//
-//        // Initializer for HomeViewModel
-//        initializer {
-//            HomeViewModel(inventoryApplication().container.itemsRepository)
-//        }
+
+        initializer {
+            HabitReportViewModel(
+                this.createSavedStateHandle(),
+                habitTrackerApplication().container.habitRepository,
+                habitTrackerApplication().container.habitCompletionRepository
+            )
+        }
     }
 }
 

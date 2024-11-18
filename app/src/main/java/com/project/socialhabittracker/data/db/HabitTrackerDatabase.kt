@@ -9,7 +9,7 @@ import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletio
 import com.project.socialhabittracker.data.db.habit_db.Habit
 import com.project.socialhabittracker.data.db.habit_db.HabitDao
 
-@Database(entities = [Habit::class, HabitCompletion::class], version = 5)
+@Database(entities = [Habit::class, HabitCompletion::class], version = 7)
 abstract class HabitTrackerDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun habitCompletionDao(): HabitCompletionDao

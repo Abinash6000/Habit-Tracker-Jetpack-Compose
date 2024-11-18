@@ -1,30 +1,16 @@
 package com.project.socialhabittracker.ui.home
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,28 +24,20 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.socialhabittracker.R
 import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
 import com.project.socialhabittracker.navigation.NavigationDestination
 import com.project.socialhabittracker.ui.AppViewModelProvider
-import com.project.socialhabittracker.ui.theme.LightYellow
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -70,10 +48,14 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     navigateToAddHabit: () -> Unit,
+    navigateToHabitReport: (Int) -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val homeUiState by viewModel.homeUiState.collectAsState()
+
+    var showProgressDialog by remember { mutableStateOf(false) }
+    var completionForDate by remember { mutableStateOf(HabitCompletion(0, 0)) }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -97,10 +79,30 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
+        if (showProgressDialog) {
+            AlertDialog(
+                onDismissRequest = { showProgressDialog = false },
+            ) {
+                ProgressDialog(
+                    progressValue = completionForDate.progressValue,
+                    onValueChange = {
+                        completionForDate = completionForDate.copy(progressValue = it)
+                    },
+                    onConfirm = {
+                        showProgressDialog = false
+                        viewModel.upsert(completionForDate)
+                    },
+                    onCancel = { showProgressDialog = false }
+                )
+            }
+        }
         HomeBody(
             habitInfo = homeUiState.habitsList,
             contentPadding = innerPadding,
-            upsurt = {viewModel.upsert(it)}
+            upsurt = { viewModel.upsert(it) },
+            showProgressDialog = { showProgressDialog = it },
+            dataToUpsertForConfirmClick = { completionForDate = it },
+            navigateToHabitReport = { navigateToHabitReport(it) }
         )
     }
 }
@@ -109,7 +111,10 @@ fun HomeScreen(
 fun HomeBody(
     habitInfo: List<HabitInfo>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    upsurt: (HabitCompletion) -> Unit
+    upsurt: (HabitCompletion) -> Unit,
+    showProgressDialog: (Boolean) -> Unit,
+    dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
+    navigateToHabitReport: (Int) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Top,
@@ -117,11 +122,15 @@ fun HomeBody(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding)
+            .padding(top = 12.dp)
     ) {
         DatesCard(title = "Habits")
         HabitList(
             habitInfo = habitInfo,
-            upsurt = upsurt
+            upsurt = upsurt,
+            showProgressDialog = showProgressDialog,
+            dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
+            navigateToHabitReport = { navigateToHabitReport(it) }
         )
     }
 }
@@ -129,226 +138,23 @@ fun HomeBody(
 @Composable
 fun HabitList(
     habitInfo: List<HabitInfo>,
-    upsurt: (HabitCompletion) -> Unit
+    upsurt: (HabitCompletion) -> Unit,
+    showProgressDialog: (Boolean) -> Unit,
+    dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
+    navigateToHabitReport: (Int) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         items(items = habitInfo, key = { it.habit.id }) {
-            HabitCompletionCard(habitInfo = it, upsert = upsurt)
-        }
-    }
-}
-
-fun lastFiveDates(): List<String> {
-    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val cal = Calendar.getInstance()
-    val lastFiveDates = mutableListOf<String>()
-
-    for (i in 1..5) {
-        val date = sdf.format(cal.time)
-        lastFiveDates.add(date)
-        cal.add(Calendar.DATE, -1)
-    }
-
-    return lastFiveDates
-}
-
-fun convertToMillis(dateString: String, dateFormat: String): Long {
-    // Create a SimpleDateFormat object with the specified date format
-    val sdf = SimpleDateFormat(dateFormat, Locale.getDefault())
-
-    // Parse the date string to a Date object
-    val date: Date = sdf.parse(dateString) ?: return -1 // Return -1 for error
-    // Return the time in milliseconds
-    return date.time
-}
-
-@Composable
-fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }, title: String) {
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = Modifier
-            .wrapContentSize()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .width(140.dp)
-                        .padding(start = 8.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Canvas(
-                    modifier = Modifier
-                        .height(15.dp)
-                        .wrapContentWidth()
-                ) {
-                    drawLine(
-                        start = Offset(x = 0F, y = size.height),
-                        end = Offset(x = 0F, y = 0F),
-                        color = Color.Gray,
-                        strokeWidth = 1.dp.toPx()
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(35.dp)
-            ) {
-                for (date in datesList) {
-                    Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
-                        Text(text = date)
-                        Canvas(
-                            Modifier
-                                .padding(2.dp)
-                                .wrapContentSize()) {
-                            drawCircle(
-                                color = Color.LightGray,
-                                radius = 35f,
-                                style = Stroke(width = 2f)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HabitCompletionCard(
-    habitInfo: HabitInfo,
-    upsert: (HabitCompletion) -> Unit,
-) {
-    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val lastFiveDates = lastFiveDates()
-    val progressList = habitInfo.habitCompletionDetails.filter { completion ->
-            val completionDate = sdf.format(Date(completion.date))
-            lastFiveDates.contains(completionDate)
-        }.sortedByDescending { completion ->
-            completion.date
-    }
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = Modifier
-            .wrapContentSize()
-            .padding(vertical = 4.dp, horizontal = 12.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                Text(
-                    text = habitInfo.habit.name,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .width(140.dp)
-                        .padding(start = 8.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Canvas(
-                    modifier = Modifier
-                        .height(15.dp)
-                        .wrapContentWidth()
-                ) {
-                    drawLine(
-                        start = Offset(x = 0F, y = size.height),
-                        end = Offset(x = 0F, y = 0F),
-                        color = Color.Gray,
-                        strokeWidth = 1.dp.toPx()
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(36.dp)
-            ) {
-                for (i in 0..4) {
-
-                    val date = lastFiveDates[i] // Assume this list has the formatted dates in order
-                    var completionForDate = progressList.find { completion ->
-                        val completionDate = sdf.format(Date(completion.date))
-                        completionDate == date
-                    }
-                    if(completionForDate == null) {
-                        completionForDate = HabitCompletion(
-                            habitId = habitInfo.habit.id,
-                            date = convertToMillis(date, "yyyy-MM-dd"),
-                            isCompleted = false,
-                            progressValue = 0f
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier.clickable(
-                            onClick = {
-                                upsert(
-                                    completionForDate.copy(
-                                        isCompleted = !completionForDate.isCompleted,
-                                        progressValue = completionForDate.progressValue+1
-                                    )
-                                )
-                            }
-                        )
-                    ) {
-                        if(habitInfo.habit.type.equals("yes or no", true)) {
-                            if(completionForDate.isCompleted) {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = "Completed",
-                                    tint = LightYellow
-                                )
-                            } else {
-                                Icon(Icons.Default.Close, contentDescription = "Not Completed")
-                            }
-                        } else{
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = completionForDate.progressValue.toString(),
-                                    fontSize = 16.sp,
-                                )
-                                Text(
-                                    text = habitInfo.habit.unit,
-                                    fontSize = 8.sp
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            HabitCompletionCard(
+                habitInfo = it,
+                upsert = upsurt,
+                showProgressDialog = showProgressDialog,
+                dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
+                navigateToHabitReport = { navigateToHabitReport(it)}
+            )
         }
     }
 }
