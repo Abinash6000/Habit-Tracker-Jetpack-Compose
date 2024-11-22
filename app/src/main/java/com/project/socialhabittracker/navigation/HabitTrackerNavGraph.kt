@@ -47,7 +47,22 @@ fun HabitTrackerNavHost(
                 type = NavType.IntType
             })
         ) {
-            HabitReport()
+            HabitReport(
+                onNavigateUp = { navController.navigateUp() },
+//                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}") }
+            )
         }
+
+//        composable(
+//            route = EditHabitDestination.routeWithArgs,
+//            arguments = listOf(navArgument(EditHabitDestination.habitIdArg) {
+//                type = NavType.IntType
+//            })
+//        ) {
+//            EditHabit(
+//                onNavigateUp = { navController.navigateUp() },
+//                navigateBack = { navController.popBackStack() }
+//            )
+//        }
     }
 }

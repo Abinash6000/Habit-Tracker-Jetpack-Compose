@@ -34,6 +34,13 @@ object AppViewModelProvider {
                 habitTrackerApplication().container.habitCompletionRepository
             )
         }
+
+//        initializer {
+//            EditHabitViewModel(
+//                this.createSavedStateHandle(),
+//                habitTrackerApplication().container.habitRepository
+//            )
+//        }
     }
 }
 

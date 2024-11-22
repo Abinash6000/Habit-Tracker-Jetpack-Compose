@@ -14,12 +14,21 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(habitCompletion: HabitCompletion)
 
-    @Query("SELECT * FROM habit_completion WHERE habit_id = :id")
-    fun getCompletionDetails(id: Int): Flow<List<HabitCompletion>>
-
     @Query("DELETE FROM habit_completion WHERE habit_id = :habitId")
     suspend fun deleteAllByHabitId(habitId: Int)
 
+    @Query("SELECT * FROM habit_completion WHERE habit_id = :id ORDER BY date")
+    fun getCompletionDetails(id: Int): Flow<List<HabitCompletion>>
+
     @Query("SELECT * FROM habit_completion")
     fun getAllCompletionDetails(): Flow<List<HabitCompletion>>
+
+    @Query("SELECT MAX(date) FROM habit_completion")
+    fun getMaxDate(): Flow<Long>
+
+    @Query("SELECT MIN(date) FROM habit_completion")
+    fun getMinDate(): Flow<Long>
+
+    @Query("SELECT date FROM habit_completion WHERE habit_id = :habitId ORDER BY date ASC")
+    fun getAllDates(habitId: Int): Flow<List<Long>>
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key.Companion.H
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -102,7 +103,10 @@ fun HomeScreen(
             upsurt = { viewModel.upsert(it) },
             showProgressDialog = { showProgressDialog = it },
             dataToUpsertForConfirmClick = { completionForDate = it },
-            navigateToHabitReport = { navigateToHabitReport(it) }
+            navigateToHabitReport = { navigateToHabitReport(it) },
+            onItemClick = { dropDownItem, habitId ->
+                viewModel.itemClick(dropDownItem, habitId)
+            }
         )
     }
 }
@@ -114,7 +118,8 @@ fun HomeBody(
     upsurt: (HabitCompletion) -> Unit,
     showProgressDialog: (Boolean) -> Unit,
     dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
-    navigateToHabitReport: (Int) -> Unit
+    navigateToHabitReport: (Int) -> Unit,
+    onItemClick: (DropDownItem, Int) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.Top,
@@ -122,7 +127,7 @@ fun HomeBody(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding)
-            .padding(top = 12.dp)
+            .padding(top = 12.dp, bottom = 12.dp)
     ) {
         DatesCard(title = "Habits")
         HabitList(
@@ -130,7 +135,8 @@ fun HomeBody(
             upsurt = upsurt,
             showProgressDialog = showProgressDialog,
             dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
-            navigateToHabitReport = { navigateToHabitReport(it) }
+            navigateToHabitReport = { navigateToHabitReport(it) },
+            onItemClick = onItemClick
         )
     }
 }
@@ -141,15 +147,19 @@ fun HabitList(
     upsurt: (HabitCompletion) -> Unit,
     showProgressDialog: (Boolean) -> Unit,
     dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
-    navigateToHabitReport: (Int) -> Unit
+    navigateToHabitReport: (Int) -> Unit,
+    onItemClick: (DropDownItem, Int) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(items = habitInfo, key = { it.habit.id }) {
+        items(items = habitInfo, key = { it.habit.id }) {habitInfo ->
             HabitCompletionCard(
-                habitInfo = it,
+                habitInfo = habitInfo,
+                dropDownItems = listOf(DropDownItem("Delete")),
+                onItemClick = { onItemClick(it, habitInfo.habit.id) },
                 upsert = upsurt,
                 showProgressDialog = showProgressDialog,
                 dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,

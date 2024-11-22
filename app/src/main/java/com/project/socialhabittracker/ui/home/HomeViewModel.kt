@@ -10,15 +10,19 @@ import com.project.socialhabittracker.data.db.habit_db.HabitRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class HomeViewModel(private val habitRepository: HabitRepository, private val habitCompletionRepository: HabitCompletionRepository) : ViewModel() {
     // Using a MutableStateFlow to hold the HomeUiState
@@ -37,12 +41,76 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
                 _homeUiState.value = HomeUiState(habitInfoList)
             }
         }
+
+        // Launch another coroutine to react to changes in homeUiState
+        viewModelScope.launch {
+            homeUiState.collect { uiState ->
+                uiState.habitsList.forEach { habitInfo ->
+                    fillMissingDates(habitInfo.habit.id)
+                }
+            }
+        }
     }
 
     fun upsert(habitCompletion: HabitCompletion) {
         viewModelScope.launch {
             habitCompletionRepository.insertHabitCompletion(habitCompletion)
         }
+    }
+
+    fun itemClick(dropDownItem: DropDownItem, habitId: Int) {
+        viewModelScope.launch {
+            if(dropDownItem.text.equals("delete", true)) {
+                habitRepository.deleteHabit(habitId)
+                habitCompletionRepository.deleteHabitCompletion(habitId)
+            }
+        }
+    }
+
+    private suspend fun fillMissingDates(habitId: Int) {
+        val datesBetMaxAndMin = getDatesBetween(habitId)
+
+        viewModelScope.launch {
+            datesBetMaxAndMin.forEach { date ->
+                habitCompletionRepository.insertHabitCompletion(
+                    HabitCompletion(habitId = habitId, date = date, progressValue = "0", isCompleted = false)
+                )
+            }
+        }
+    }
+
+    private suspend fun getDatesBetween(habitId: Int): List<Long> = coroutineScope {
+        val maxDate =
+            async { habitCompletionRepository.getMaxDateStream().filterNotNull().first() }
+        val minDate =
+            async { habitCompletionRepository.getMinDateStream().filterNotNull().first() }
+        val existingDates = async {
+            habitCompletionRepository.getAllDatesStream(habitId).filterNotNull().first()
+        }
+
+        val cal = Calendar.getInstance()
+        val datesBetMaxAndMin = mutableListOf<Long>()
+
+        val maxDateValue = maxDate.await()
+        val minDateValue = minDate.await()
+        Log.d("abcde", "maxDateValue: $maxDateValue")
+        Log.d("abcde", "minDateValue: $minDateValue")
+        val existingDateSet = existingDates.await().toSet() // Convert to Set for faster lookup
+
+        cal.timeInMillis = minDateValue // Start at minDate
+
+        while (cal.timeInMillis < maxDateValue) {
+            val currentDate = cal.timeInMillis
+            if (currentDate !in existingDateSet) {
+                datesBetMaxAndMin.add(currentDate)
+//                Log.d("abcde", convertToDateMonthYear(currentDate))
+            }
+
+            // Increment by one day
+            cal.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        return@coroutineScope datesBetMaxAndMin
     }
 }
 

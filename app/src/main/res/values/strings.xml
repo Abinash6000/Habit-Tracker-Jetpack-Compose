@@ -4,4 +4,5 @@
     <string name="add_habit_title">Add Habit</string>
     <string name="add_your_habits_by_clicking_on">Add your habits\nby clicking on +</string>
     <string name="habit_report_title">Habit Report</string>
+    <string name="edit_habit_title">Edit Habit</string>
 </resources>

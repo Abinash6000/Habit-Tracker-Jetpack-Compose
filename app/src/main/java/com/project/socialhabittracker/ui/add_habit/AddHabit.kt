@@ -159,16 +159,17 @@ fun AddHabitBody(
             }
         }
 
-        // Target Field
-        OutlinedTextField(
-            value = addHabitUiState.habit.targetCount,
-            onValueChange = {
-                onItemValueChange(addHabitUiState.habit.copy(targetCount = it))
-            },
-            label = { Text("Target") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
+        if(addHabitUiState.habit.type.equals("Measurable"))
+            // Target Field
+            OutlinedTextField(
+                value = addHabitUiState.habit.targetCount,
+                onValueChange = {
+                    onItemValueChange(addHabitUiState.habit.copy(targetCount = it))
+                },
+                label = { Text("Target") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
 
         // Notes Field
         OutlinedTextField(
