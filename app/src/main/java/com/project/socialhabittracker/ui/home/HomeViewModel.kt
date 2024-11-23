@@ -3,6 +3,7 @@ package com.project.socialhabittracker.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.compose.rememberNavController
 import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
 import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletionRepository
 import com.project.socialhabittracker.data.db.habit_db.Habit
@@ -58,12 +59,9 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
         }
     }
 
-    fun itemClick(dropDownItem: DropDownItem, habitId: Int) {
+    fun deleteHabit(habitId: Int) {
         viewModelScope.launch {
-            if(dropDownItem.text.equals("delete", true)) {
-                habitRepository.deleteHabit(habitId)
-                habitCompletionRepository.deleteHabitCompletion(habitId)
-            }
+            habitRepository.deleteHabit(habitId)
         }
     }
 
@@ -99,7 +97,7 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
 
         cal.timeInMillis = minDateValue // Start at minDate
 
-        while (cal.timeInMillis < maxDateValue) {
+        while (cal.timeInMillis <= maxDateValue) {
             val currentDate = cal.timeInMillis
             if (currentDate !in existingDateSet) {
                 datesBetMaxAndMin.add(currentDate)

@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.project.socialhabittracker.ui.add_habit.AddHabit
 import com.project.socialhabittracker.ui.add_habit.AddHabitDestination
+import com.project.socialhabittracker.ui.edit_habit.EditHabit
+import com.project.socialhabittracker.ui.edit_habit.EditHabitDestination
 import com.project.socialhabittracker.ui.habit_report.HabitReport
 import com.project.socialhabittracker.ui.habit_report.HabitReportDestination
 import com.project.socialhabittracker.ui.home.HomeDestination
@@ -30,7 +32,8 @@ fun HabitTrackerNavHost(
         composable(route = HomeDestination.route) {
             HomeScreen(
                 navigateToAddHabit = { navController.navigate(AddHabitDestination.route) },
-                navigateToHabitReport = { navController.navigate("${HabitReportDestination.route}/${it}") }
+                navigateToHabitReport = { navController.navigate("${HabitReportDestination.route}/${it}") },
+                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}")}
             )
         }
 
@@ -49,20 +52,20 @@ fun HabitTrackerNavHost(
         ) {
             HabitReport(
                 onNavigateUp = { navController.navigateUp() },
-//                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}") }
+                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}") }
             )
         }
 
-//        composable(
-//            route = EditHabitDestination.routeWithArgs,
-//            arguments = listOf(navArgument(EditHabitDestination.habitIdArg) {
-//                type = NavType.IntType
-//            })
-//        ) {
-//            EditHabit(
-//                onNavigateUp = { navController.navigateUp() },
-//                navigateBack = { navController.popBackStack() }
-//            )
-//        }
+        composable(
+            route = EditHabitDestination.routeWithArgs,
+            arguments = listOf(navArgument(EditHabitDestination.habitIdArg) {
+                type = NavType.IntType
+            })
+        ) {
+            EditHabit(
+                onNavigateUp = { navController.navigateUp() },
+                navigateBack = { navController.popBackStack() }
+            )
+        }
     }
 }

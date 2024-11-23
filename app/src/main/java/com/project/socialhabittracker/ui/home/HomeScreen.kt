@@ -50,6 +50,7 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     navigateToAddHabit: () -> Unit,
     navigateToHabitReport: (Int) -> Unit,
+    navigateToEditHabit: (Int) -> Unit,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -78,6 +79,9 @@ fun HomeScreen(
                     contentDescription = stringResource(R.string.add_habit_title)
                 )
             }
+        },
+        bottomBar = {
+
         }
     ) { innerPadding ->
         if (showProgressDialog) {
@@ -105,7 +109,10 @@ fun HomeScreen(
             dataToUpsertForConfirmClick = { completionForDate = it },
             navigateToHabitReport = { navigateToHabitReport(it) },
             onItemClick = { dropDownItem, habitId ->
-                viewModel.itemClick(dropDownItem, habitId)
+                when (dropDownItem.text) {
+                    "Delete" -> viewModel.deleteHabit(habitId)
+                    "Edit" -> navigateToEditHabit(habitId)
+                }
             }
         )
     }
@@ -158,7 +165,7 @@ fun HabitList(
         items(items = habitInfo, key = { it.habit.id }) {habitInfo ->
             HabitCompletionCard(
                 habitInfo = habitInfo,
-                dropDownItems = listOf(DropDownItem("Delete")),
+                dropDownItems = listOf(DropDownItem("Edit"), DropDownItem("Delete")),
                 onItemClick = { onItemClick(it, habitInfo.habit.id) },
                 upsert = upsurt,
                 showProgressDialog = showProgressDialog,
