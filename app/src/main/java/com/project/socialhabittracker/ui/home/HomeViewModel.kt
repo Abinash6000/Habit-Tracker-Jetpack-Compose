@@ -55,6 +55,7 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
 
     fun upsert(habitCompletion: HabitCompletion) {
         viewModelScope.launch {
+            Log.d("minDate", habitCompletion.toString())
             habitCompletionRepository.insertHabitCompletion(habitCompletion)
         }
     }
@@ -90,18 +91,18 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
         val datesBetMaxAndMin = mutableListOf<Long>()
 
         val maxDateValue = maxDate.await()
-        val minDateValue = minDate.await()
+        var minDateValue = minDate.await()
         Log.d("abcde", "maxDateValue: $maxDateValue")
         Log.d("abcde", "minDateValue: $minDateValue")
         val existingDateSet = existingDates.await().toSet() // Convert to Set for faster lookup
 
-        cal.timeInMillis = minDateValue // Start at minDate
+        if(minDateValue != 0L)
+            cal.timeInMillis = minDateValue // Start at minDate
 
         while (cal.timeInMillis <= maxDateValue) {
             val currentDate = cal.timeInMillis
             if (currentDate !in existingDateSet) {
                 datesBetMaxAndMin.add(currentDate)
-//                Log.d("abcde", convertToDateMonthYear(currentDate))
             }
 
             // Increment by one day

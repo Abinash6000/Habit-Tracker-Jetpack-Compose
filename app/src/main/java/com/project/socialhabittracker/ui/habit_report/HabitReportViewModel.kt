@@ -77,7 +77,6 @@ class HabitReportViewModel(
         }
 
         val percentage = (perfectDays.toDouble()/totalDays)*100
-        Log.d("abcde", percentage.toString())
         return HabitScores(
             perfectDaysScore = perfectDays.toString(),
             currentStreakScore = currentStreak.toString(),

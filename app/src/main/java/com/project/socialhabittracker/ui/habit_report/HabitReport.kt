@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -232,16 +235,24 @@ fun BarItem(
 
         val date = convertToDate(habitCompletion.date)
         val monthYear = convertToMonthYear(habitCompletion.date)
-        val dateText = if(date.equals("1")) monthYear else date
+        val dateText = if(date.equals("01")) monthYear else date
 
-        Text(
-            text = if (progressValue % 1 == 0f) {
-                progressValue.toInt().toString() // Convert to Int if it's a whole number
-            } else {
-                progressValue.toString() // Otherwise, keep it as Float
-            },
-            fontSize = 12.sp
-        )
+        if(isMeasurable) {
+            Text(
+                text = if (progressValue % 1 == 0f) {
+                    progressValue.toInt().toString() // Convert to Int if it's a whole number
+                } else {
+                    progressValue.toString() // Otherwise, keep it as Float
+                },
+                fontSize = 12.sp
+            )
+        } else {
+            Icon(
+                imageVector = if(habitCompletion.isCompleted) Icons.Default.Check else Icons.Default.Clear,
+                contentDescription = if(habitCompletion.isCompleted) "Checked" else "Unchecked",
+                modifier = Modifier.size(16.dp)
+            )
+        }
         Box(
             modifier = Modifier
                 .width(16.dp)

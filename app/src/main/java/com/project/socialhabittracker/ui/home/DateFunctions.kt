@@ -26,26 +26,22 @@ fun convertToMillis(dateString: String): Long {
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     // Parse the date string to a Date object
-    val date: Date = sdf.parse(dateString) ?: return -1 // Return -1 for error12
+    val date: Date? = sdf.parse(dateString) // Return -1 for error12
     // Return the time in milliseconds
-    Log.d("abcde", "convertToMillis: $date")
-    return date.time
+    return date!!.time
 }
 
 fun convertToDateMonthYear(dateInMillis: Long): String {
     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//    Log.d("abcde", "convertToDateMonthYear: ${sdf.format(dateInMillis)}")
     return sdf.format(dateInMillis)
 }
 
 fun convertToDate(dateInMillis: Long): String {
     val sdf = SimpleDateFormat("dd", Locale.getDefault())
-    Log.d("abcde", "convertToDate: ${sdf.format(dateInMillis)}")
     return sdf.format(dateInMillis)
 }
 
 fun convertToMonthYear(dateInMillis: Long): String {
-    val sdf = SimpleDateFormat("MM\nyy", Locale.getDefault())
-    Log.d("abcde", "convertToMonthYear: ${sdf.format(dateInMillis)}")
+    val sdf = SimpleDateFormat("MMM yy", Locale.getDefault())
     return sdf.format(dateInMillis)
 }

@@ -15,6 +15,9 @@ import com.project.socialhabittracker.ui.habit_report.HabitReport
 import com.project.socialhabittracker.ui.habit_report.HabitReportDestination
 import com.project.socialhabittracker.ui.home.HomeDestination
 import com.project.socialhabittracker.ui.home.HomeScreen
+import com.project.socialhabittracker.ui.overall_report.OverallReport
+import com.project.socialhabittracker.ui.ranking.Ranking
+import com.project.socialhabittracker.ui.settings.Settings
 
 /**
  * Provides Navigation Graph for the application
@@ -33,7 +36,8 @@ fun HabitTrackerNavHost(
             HomeScreen(
                 navigateToAddHabit = { navController.navigate(AddHabitDestination.route) },
                 navigateToHabitReport = { navController.navigate("${HabitReportDestination.route}/${it}") },
-                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}")}
+                navigateToEditHabit = { navController.navigate("${EditHabitDestination.route}/${it}")},
+                navController = navController
             )
         }
 
@@ -66,6 +70,18 @@ fun HabitTrackerNavHost(
                 onNavigateUp = { navController.navigateUp() },
                 navigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(route = OverallReport.route) {
+            OverallReport()
+        }
+
+        composable(route = Ranking.route) {
+            Ranking()
+        }
+
+        composable(route = Settings.route) {
+            Settings()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.project.socialhabittracker.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,13 +11,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -26,19 +36,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.Key.Companion.H
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.project.socialhabittracker.R
 import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
 import com.project.socialhabittracker.navigation.NavigationDestination
 import com.project.socialhabittracker.ui.AppViewModelProvider
+import com.project.socialhabittracker.ui.overall_report.OverallReport
+import com.project.socialhabittracker.ui.ranking.Ranking
+import com.project.socialhabittracker.ui.settings.Settings
+import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -51,14 +72,14 @@ fun HomeScreen(
     navigateToAddHabit: () -> Unit,
     navigateToHabitReport: (Int) -> Unit,
     navigateToEditHabit: (Int) -> Unit,
+    navController: NavHostController,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val homeUiState by viewModel.homeUiState.collectAsState()
 
     var showProgressDialog by remember { mutableStateOf(false) }
-    var completionForDate by remember { mutableStateOf(HabitCompletion(0, 0)) }
-
+    var completionForDate by remember { mutableStateOf(HabitCompletion(0, convertToMillis(convertToDateMonthYear(Calendar.getInstance().timeInMillis)))) }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -81,7 +102,10 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-
+            BottomBar(
+                bottomBarItems = getTabBarItems(),
+                navController = navController
+            )
         }
     ) { innerPadding ->
         if (showProgressDialog) {
@@ -197,5 +221,60 @@ fun HabitTrackerTopAppBar(
                 }
             }
         }
+    )
+}
+
+data class TabBarItem(
+    val title: Int,
+    val route: String,
+    val selectedIcon: Int,
+    val unselectedIcon: Int
+)
+
+fun getTabBarItems(): List<TabBarItem> {
+    val homeTab = TabBarItem(title = R.string.home, route = HomeDestination.route, selectedIcon = R.drawable.filled_home, unselectedIcon = R.drawable.outlined_home)
+    val overallReportTab = TabBarItem(title = R.string.report, route = OverallReport.route, selectedIcon = R.drawable.filled_bar_chart, unselectedIcon = R.drawable.filled_bar_chart)
+    val rankingTab = TabBarItem(title = R.string.ranking, route = Ranking.route, selectedIcon = R.drawable.filled_people, unselectedIcon = R.drawable.outlined_people)
+    val settingsTab = TabBarItem(title = R.string.settings, route = Settings.route, selectedIcon = R.drawable.settings_filled, unselectedIcon = R.drawable.outlined_settings)
+
+    return listOf(homeTab, overallReportTab, rankingTab, settingsTab)
+}
+
+@Composable
+fun BottomBar(bottomBarItems: List<TabBarItem>, navController: NavHostController) {
+    var selectedTabIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
+    NavigationBar {
+        bottomBarItems.forEachIndexed { index, tabBarItem ->
+            NavigationBarItem(
+                selected = selectedTabIndex == index,
+                onClick = {
+                    selectedTabIndex = index
+                    navController.navigate(tabBarItem.route)
+                },
+                icon = {
+                    TabBarIconView(
+                        isSelected = selectedTabIndex == index,
+                        selectedIcon = ImageVector.vectorResource(tabBarItem.selectedIcon),
+                        unselectedIcon = ImageVector.vectorResource(tabBarItem.unselectedIcon),
+                        title = stringResource(id = tabBarItem.title)
+                    )
+                },
+                label = {Text(text = stringResource(tabBarItem.title))})
+        }
+    }
+}
+
+@Composable
+fun TabBarIconView(
+    isSelected: Boolean,
+    selectedIcon: ImageVector,
+    unselectedIcon: ImageVector,
+    title: String
+) {
+    Icon(
+        imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
+        contentDescription = title
     )
 }

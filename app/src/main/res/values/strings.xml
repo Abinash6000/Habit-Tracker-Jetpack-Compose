@@ -5,4 +5,9 @@
     <string name="add_your_habits_by_clicking_on">Add your habits\nby clicking on +</string>
     <string name="habit_report_title">Habit Report</string>
     <string name="edit_habit_title">Edit Habit</string>
+    <string name="overall_report">Overall Report</string>
+    <string name="ranking">Ranking</string>
+    <string name="settings">Settings</string>
+    <string name="home">Home</string>
+    <string name="report">Report</string>
 </resources>
