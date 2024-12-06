@@ -14,21 +14,36 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(habitCompletion: HabitCompletion)
 
+    // delete a completions of particular habit -> maybe not required because auto deleted because this is foreign table
     @Query("DELETE FROM habit_completion WHERE habit_id = :habitId")
     suspend fun deleteAllByHabitId(habitId: Int)
 
-    @Query("SELECT * FROM habit_completion WHERE habit_id = :id ORDER BY date")
-    fun getCompletionDetails(id: Int): Flow<List<HabitCompletion>>
+    // get completions of particular habit
+    @Query("SELECT * FROM habit_completion WHERE habit_id = :habitId ORDER BY date")
+    fun getCompletionDetails(habitId: Int): Flow<List<HabitCompletion>>
 
+    // get all completions
     @Query("SELECT * FROM habit_completion")
     fun getAllCompletionDetails(): Flow<List<HabitCompletion>>
 
-    @Query("SELECT MAX(date) FROM habit_completion")
-    fun getMaxDate(): Flow<Long>
+    // get max date of a particular habit
+    @Query("SELECT MAX(date) FROM habit_completion WHERE habit_id = :habitId")
+    fun getParticularMaxDate(habitId: Int): Flow<Long>
 
-    @Query("SELECT MIN(date) FROM habit_completion")
-    fun getMinDate(): Flow<Long>
+    // get min date of a particular habit
+    @Query("SELECT MIN(date) FROM habit_completion WHERE habit_id = :habitId")
+    fun getParticularMinDate(habitId: Int): Flow<Long>
+
+    // get min and max date of all completions
+    @Query("SELECT MIN(date) AS minDate, MAX(date) AS maxDate FROM habit_completion")
+    fun getMinMaxDate(): Flow<DateRange>
+
+    // get completion according to date
+    @Query("SELECT * FROM habit_completion WHERE date = :date")
+    fun getCompletionsForDate(date: Long): Flow<List<HabitCompletion>>
 
     @Query("SELECT date FROM habit_completion WHERE habit_id = :habitId ORDER BY date ASC")
     fun getAllDates(habitId: Int): Flow<List<Long>>
 }
+
+data class DateRange(val maxDate: Long, val minDate: Long)

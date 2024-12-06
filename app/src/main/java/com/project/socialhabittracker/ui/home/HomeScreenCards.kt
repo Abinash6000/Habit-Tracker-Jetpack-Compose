@@ -2,6 +2,7 @@ package com.project.socialhabittracker.ui.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -285,12 +286,13 @@ fun HabitCompletionCard(
                                 if (completionForDate.isCompleted) {
                                     Icon(
                                         Icons.Default.Check,
-                                        contentDescription = "Completed"
+                                        contentDescription = "Completed",
+                                        tint = colorScheme.primary
                                     )
                                 } else {
                                     Icon(
                                         Icons.Default.Close,
-                                        contentDescription = "Not Completed"
+                                        contentDescription = "Not Completed",
                                     )
                                 }
                             } else {
@@ -301,10 +303,12 @@ fun HabitCompletionCard(
                                     Text(
                                         text = completionForDate.progressValue,
                                         fontSize = 16.sp,
+                                        color = if(completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified
                                     )
                                     Text(
                                         text = habitInfo.habit.unit,
-                                        fontSize = 8.sp
+                                        fontSize = 8.sp,
+                                        color = if(completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified
                                     )
                                 }
                             }
@@ -408,7 +412,7 @@ fun ProgressDialog(
                 IconButton(onClick = onCancel) {
                     Icon(
                         imageVector = Icons.Default.Close, // Use a cross icon
-                        contentDescription = "Cancel",
+                        contentDescription = "Cancel"
                     )
                 }
                 Canvas(modifier = Modifier
@@ -425,7 +429,7 @@ fun ProgressDialog(
                 IconButton(onClick = onConfirm) {
                     Icon(
                         imageVector = Icons.Default.Check, // Use a check icon
-                        contentDescription = "Confirm",
+                        contentDescription = "Confirm"
                     )
                 }
             }

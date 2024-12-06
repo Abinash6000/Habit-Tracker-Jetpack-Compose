@@ -34,6 +34,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -103,6 +104,7 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomBar(
+                tabNum = 0,
                 bottomBarItems = getTabBarItems(),
                 navController = navController
             )
@@ -241,9 +243,9 @@ fun getTabBarItems(): List<TabBarItem> {
 }
 
 @Composable
-fun BottomBar(bottomBarItems: List<TabBarItem>, navController: NavHostController) {
+fun BottomBar(tabNum: Int, bottomBarItems: List<TabBarItem>, navController: NavHostController) {
     var selectedTabIndex by rememberSaveable {
-        mutableStateOf(0)
+        mutableIntStateOf(tabNum)
     }
     NavigationBar {
         bottomBarItems.forEachIndexed { index, tabBarItem ->

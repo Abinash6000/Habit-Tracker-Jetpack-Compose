@@ -42,6 +42,6 @@ fun convertToDate(dateInMillis: Long): String {
 }
 
 fun convertToMonthYear(dateInMillis: Long): String {
-    val sdf = SimpleDateFormat("MMM yy", Locale.getDefault())
+    val sdf = SimpleDateFormat("MMM yyyy", Locale.getDefault())
     return sdf.format(dateInMillis)
 }

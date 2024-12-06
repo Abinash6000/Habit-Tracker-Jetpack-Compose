@@ -10,9 +10,14 @@ class OfflineHabitCompletionRepository(private val habitCompletionDao: HabitComp
     override fun getCompletionDetailsStream(habitId: Int): Flow<List<HabitCompletion>> = habitCompletionDao.getCompletionDetails(habitId)
 
     override fun getAllCompletionDetailsStream(): Flow<List<HabitCompletion>> = habitCompletionDao.getAllCompletionDetails()
-    override fun getMaxDateStream(): Flow<Long> = habitCompletionDao.getMaxDate()
 
-    override fun getMinDateStream(): Flow<Long> = habitCompletionDao.getMinDate()
+    override fun getCompletionsForDateStream(date: Long): Flow<List<HabitCompletion>> = habitCompletionDao.getCompletionsForDate(date)
+
+    override fun getMinMaxDateStream(): Flow<DateRange> = habitCompletionDao.getMinMaxDate()
+
+    override fun getParticularMaxDateStream(habitId: Int): Flow<Long> = habitCompletionDao.getParticularMaxDate(habitId)
+
+    override fun getParticularMinDateStream(habitId: Int): Flow<Long> = habitCompletionDao.getParticularMinDate(habitId)
 
     override fun getAllDatesStream(habitId: Int): Flow<List<Long>> = habitCompletionDao.getAllDates(habitId)
 

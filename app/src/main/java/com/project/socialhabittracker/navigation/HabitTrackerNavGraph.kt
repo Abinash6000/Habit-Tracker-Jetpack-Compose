@@ -73,7 +73,9 @@ fun HabitTrackerNavHost(
         }
 
         composable(route = OverallReport.route) {
-            OverallReport()
+            OverallReport(
+                navController = navController
+            )
         }
 
         composable(route = Ranking.route) {

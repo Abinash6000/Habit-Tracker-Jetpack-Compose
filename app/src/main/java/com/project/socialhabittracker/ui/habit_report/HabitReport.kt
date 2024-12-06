@@ -262,7 +262,7 @@ fun BarItem(
         )
         Text(
             text = dateText,
-            fontSize = 12.sp
+            fontSize = if(dateText.equals(monthYear)) 8.sp else 12.sp
         )
     }
 }

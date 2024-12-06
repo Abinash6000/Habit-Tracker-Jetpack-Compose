@@ -21,7 +21,7 @@ import java.util.Calendar
 )
 data class HabitCompletion(
     @ColumnInfo(name = "habit_id") val habitId: Int, // Foreign key to Habit table
-    @ColumnInfo(name = "date") val date: Long = convertToMillis(convertToDateMonthYear(Calendar.getInstance().timeInMillis)), // Store date as timestamp
+    @ColumnInfo(name = "date") val date: Long, // Store date as timestamp
     @ColumnInfo(name = "is_completed") val isCompleted: Boolean = false, // For "yes_no" habits
     @ColumnInfo(name = "progress_value") val progressValue: String = "0" // For "measurable" habits
 )

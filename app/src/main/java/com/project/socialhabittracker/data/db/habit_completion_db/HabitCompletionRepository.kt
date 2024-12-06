@@ -11,8 +11,13 @@ interface HabitCompletionRepository {
 
     fun getAllCompletionDetailsStream(): Flow<List<HabitCompletion>>
 
-    fun getMaxDateStream(): Flow<Long>
+    fun getCompletionsForDateStream(date: Long): Flow<List<HabitCompletion>>
 
-    fun getMinDateStream(): Flow<Long>
+    fun getMinMaxDateStream(): Flow<DateRange>
+
+    fun getParticularMaxDateStream(habitId: Int): Flow<Long>
+
+    fun getParticularMinDateStream(habitId: Int): Flow<Long>
+
     fun getAllDatesStream(habitId: Int): Flow<List<Long>>
 }

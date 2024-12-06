@@ -11,6 +11,7 @@ import com.project.socialhabittracker.ui.add_habit.AddHabitViewModel
 import com.project.socialhabittracker.ui.edit_habit.EditHabitViewModel
 import com.project.socialhabittracker.ui.habit_report.HabitReportViewModel
 import com.project.socialhabittracker.ui.home.HomeViewModel
+import com.project.socialhabittracker.ui.overall_report.OverallReportViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -40,6 +41,13 @@ object AppViewModelProvider {
             EditHabitViewModel(
                 this.createSavedStateHandle(),
                 habitTrackerApplication().container.habitRepository
+            )
+        }
+
+        initializer {
+            OverallReportViewModel(
+                habitTrackerApplication().container.habitRepository,
+                habitTrackerApplication().container.habitCompletionRepository
             )
         }
     }

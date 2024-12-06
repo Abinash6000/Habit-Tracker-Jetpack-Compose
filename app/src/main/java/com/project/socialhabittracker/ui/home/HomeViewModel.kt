@@ -55,7 +55,6 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
 
     fun upsert(habitCompletion: HabitCompletion) {
         viewModelScope.launch {
-            Log.d("minDate", habitCompletion.toString())
             habitCompletionRepository.insertHabitCompletion(habitCompletion)
         }
     }
@@ -79,10 +78,12 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
     }
 
     private suspend fun getDatesBetween(habitId: Int): List<Long> = coroutineScope {
+//        val pairOfDateRange =
+//            async { habitCompletionRepository.getParticularMinMaxDateStream(habitId).filterNotNull().first() }
         val maxDate =
-            async { habitCompletionRepository.getMaxDateStream().filterNotNull().first() }
+            async { habitCompletionRepository.getParticularMaxDateStream(habitId).filterNotNull().first() }
         val minDate =
-            async { habitCompletionRepository.getMinDateStream().filterNotNull().first() }
+            async { habitCompletionRepository.getParticularMinDateStream(habitId).filterNotNull().first() }
         val existingDates = async {
             habitCompletionRepository.getAllDatesStream(habitId).filterNotNull().first()
         }
@@ -90,10 +91,8 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
         val cal = Calendar.getInstance()
         val datesBetMaxAndMin = mutableListOf<Long>()
 
+        val minDateValue = minDate.await()
         val maxDateValue = maxDate.await()
-        var minDateValue = minDate.await()
-        Log.d("abcde", "maxDateValue: $maxDateValue")
-        Log.d("abcde", "minDateValue: $minDateValue")
         val existingDateSet = existingDates.await().toSet() // Convert to Set for faster lookup
 
         if(minDateValue != 0L)
