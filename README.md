@@ -51,15 +51,52 @@ Track your habits, measure your progress, and become the disciplined machine you
 
 ## 📁 Folder Structure
 
+# 📁 Project Folder Structure (MVVM + Firebase + Room + Clean Architecture)
+
 ```plaintext
-├── data/
-│   ├── local/ (Room DB)
-│   └── remote/ (Firestore)
-├── ui/
-│   ├── screens/
-│   └── components/
-├── viewmodels/
-└── models/
+
+com.project.socialhabittracker
+│
+├── data
+│   ├── local                     # Room database layer
+│   │   ├── dao                   # Data Access Objects
+│   │   ├── entities              # Entity classes
+│   │   └── AppDatabase.kt        # Room DB setup
+│   │
+│   ├── remote                    # Firebase-related logic
+│   │   ├── auth
+│   │   │   ├── FirebaseAuthRepository.kt         # Auth interface
+│   │   │   └── FirebaseAuthRepositoryImpl.kt     # Auth implementation
+│   │   │
+│   │   ├── firestore
+│   │   │   ├── FirestoreUserRepository.kt        # Firestore interface
+│   │   │   └── FirestoreUserRepositoryImpl.kt    # Firestore implementation
+│   │
+│   └── repository
+│       └── UserRepository.kt     # Combines local + remote (optional)
+│
+├── domain                        # Business logic layer (optional)
+│   ├── model                     # Clean models (UI-friendly)
+│   └── usecase                   # Use cases (e.g., SaveUserUseCase.kt)
+│
+├── ui
+│   ├── login
+│   │   ├── LoginViewModel.kt
+│   │   └── LoginScreen.kt
+│   │
+│   ├── home
+│   │   ├── HomeViewModel.kt
+│   │   └── HomeScreen.kt
+│   │
+│   └── components                # Reusable Jetpack Compose components
+│
+├── utils
+│   ├── Extensions.kt             # Extension functions
+│   └── Constants.kt              # App-wide constants
+│
+└── di
+└── AppModule.kt              # Hilt dependency injection module
+
 ```
 
 ---
