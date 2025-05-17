@@ -1,4 +1,4 @@
-package com.project.socialhabittracker.data.db.habit_db
+package com.project.socialhabittracker.data.local.db.habit_db
 
 import androidx.room.Dao
 import androidx.room.Delete

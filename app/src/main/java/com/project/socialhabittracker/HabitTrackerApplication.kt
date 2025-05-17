@@ -1,8 +1,8 @@
 package com.project.socialhabittracker
 
 import android.app.Application
-import com.project.socialhabittracker.data.db.AppContainer
-import com.project.socialhabittracker.data.db.AppDataContainer
+import com.project.socialhabittracker.data.local.db.AppContainer
+import com.project.socialhabittracker.data.local.db.AppDataContainer
 
 class HabitTrackerApplication : Application() {
     /**

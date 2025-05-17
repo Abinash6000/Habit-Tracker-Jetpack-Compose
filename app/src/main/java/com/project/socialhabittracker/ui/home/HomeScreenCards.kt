@@ -64,7 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -376,7 +376,7 @@ fun ProgressDialog(
                     .align(Alignment.CenterHorizontally)
                     .focusRequester(focusRequester),
                 textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 24.sp, color = color),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 keyboardActions = KeyboardActions(
                     onDone = {
                         this.defaultKeyboardAction(ImeAction.Done)

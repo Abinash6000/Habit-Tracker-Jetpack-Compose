@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.socialhabittracker.R
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
 import com.project.socialhabittracker.navigation.NavigationDestination
 import com.project.socialhabittracker.ui.AppViewModelProvider
 import com.project.socialhabittracker.ui.home.HabitInfo
@@ -155,7 +155,8 @@ fun NoteCard(
             modifier = modifier.wrapContentSize()
         ) {
             Text(
-                text = note
+                text = note,
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }

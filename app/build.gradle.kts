@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.project.socialhabittracker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.project.socialhabittracker"
@@ -76,4 +77,17 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // firebase
+    implementation(platform(libs.firebase.bom))
+
+    // firebase firestore
+    implementation(libs.firebase.firestore)
+    // firebase auth
+    implementation(libs.firebase.auth.ktx)
+    // Jetpack Credentials API
+    implementation(libs.androidx.credentials)
+    // Optional - Google Play services provider for Android 13 and below
+    implementation(libs.androidx.credentials.play.services.auth)
+
 }

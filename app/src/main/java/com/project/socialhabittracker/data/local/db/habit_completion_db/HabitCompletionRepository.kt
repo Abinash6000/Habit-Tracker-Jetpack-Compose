@@ -1,4 +1,4 @@
-package com.project.socialhabittracker.data.db.habit_completion_db
+package com.project.socialhabittracker.data.local.db.habit_completion_db
 
 import kotlinx.coroutines.flow.Flow
 

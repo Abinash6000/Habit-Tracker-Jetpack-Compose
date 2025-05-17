@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.compose.rememberNavController
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletionRepository
-import com.project.socialhabittracker.data.db.habit_db.Habit
-import com.project.socialhabittracker.data.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionRepository
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -44,13 +44,13 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
         }
 
         // Launch another coroutine to react to changes in homeUiState
-        viewModelScope.launch {
-            homeUiState.collect { uiState ->
-                uiState.habitsList.forEach { habitInfo ->
-                    fillMissingDates(habitInfo.habit.id)
-                }
-            }
-        }
+//        viewModelScope.launch {
+//            homeUiState.collect { uiState ->
+//                uiState.habitsList.forEach { habitInfo ->
+//                    fillMissingDates(habitInfo.habit.id)
+//                }
+//            }
+//        }
     }
 
     fun upsert(habitCompletion: HabitCompletion) {
@@ -65,17 +65,17 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
         }
     }
 
-    private suspend fun fillMissingDates(habitId: Int) {
-        val datesBetMaxAndMin = getDatesBetween(habitId)
-
-        viewModelScope.launch {
-            datesBetMaxAndMin.forEach { date ->
-                habitCompletionRepository.insertHabitCompletion(
-                    HabitCompletion(habitId = habitId, date = date, progressValue = "0", isCompleted = false)
-                )
-            }
-        }
-    }
+//    private suspend fun fillMissingDates(habitId: Int) {
+//        val datesBetMaxAndMin = getDatesBetween(habitId)
+//
+//        viewModelScope.launch {
+//            datesBetMaxAndMin.forEach { date ->
+//                habitCompletionRepository.insertHabitCompletion(
+//                    HabitCompletion(habitId = habitId, date = date, progressValue = "0", isCompleted = false)
+//                )
+//            }
+//        }
+//    }
 
     private suspend fun getDatesBetween(habitId: Int): List<Long> = coroutineScope {
 //        val pairOfDateRange =
@@ -84,25 +84,25 @@ class HomeViewModel(private val habitRepository: HabitRepository, private val ha
             async { habitCompletionRepository.getParticularMaxDateStream(habitId).filterNotNull().first() }
         val minDate =
             async { habitCompletionRepository.getParticularMinDateStream(habitId).filterNotNull().first() }
-        val existingDates = async {
-            habitCompletionRepository.getAllDatesStream(habitId).filterNotNull().first()
-        }
+//        val existingDates = async {
+//            habitCompletionRepository.getAllDatesStream(habitId).filterNotNull().first()
+//        }
 
         val cal = Calendar.getInstance()
         val datesBetMaxAndMin = mutableListOf<Long>()
 
         val minDateValue = minDate.await()
         val maxDateValue = maxDate.await()
-        val existingDateSet = existingDates.await().toSet() // Convert to Set for faster lookup
+//        val existingDateSet = existingDates.await().toSet() // Convert to Set for faster lookup
 
         if(minDateValue != 0L)
             cal.timeInMillis = minDateValue // Start at minDate
 
         while (cal.timeInMillis <= maxDateValue) {
             val currentDate = cal.timeInMillis
-            if (currentDate !in existingDateSet) {
+//            if (currentDate !in existingDateSet) {
                 datesBetMaxAndMin.add(currentDate)
-            }
+//            }
 
             // Increment by one day
             cal.add(Calendar.DAY_OF_MONTH, 1)

@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.socialhabittracker.data.db.habit_db.Habit
-import com.project.socialhabittracker.data.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
 import com.project.socialhabittracker.ui.habit_report.HabitReportDestination
 import com.project.socialhabittracker.ui.home.HabitInfo
 import kotlinx.coroutines.async

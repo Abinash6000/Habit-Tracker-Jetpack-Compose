@@ -1,10 +1,10 @@
-package com.project.socialhabittracker.data.db
+package com.project.socialhabittracker.data.local.db
 
 import android.content.Context
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletionRepository
-import com.project.socialhabittracker.data.db.habit_completion_db.OfflineHabitCompletionRepository
-import com.project.socialhabittracker.data.db.habit_db.HabitRepository
-import com.project.socialhabittracker.data.db.habit_db.OfflineHabitRepository
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionRepository
+import com.project.socialhabittracker.data.local.db.habit_completion_db.OfflineHabitCompletionRepository
+import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.db.habit_db.OfflineHabitRepository
 
 /**
  * App container for Dependency injection.

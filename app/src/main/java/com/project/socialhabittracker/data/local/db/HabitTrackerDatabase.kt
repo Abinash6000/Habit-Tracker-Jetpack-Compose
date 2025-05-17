@@ -1,15 +1,15 @@
-package com.project.socialhabittracker.data.db
+package com.project.socialhabittracker.data.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletionDao
-import com.project.socialhabittracker.data.db.habit_db.Habit
-import com.project.socialhabittracker.data.db.habit_db.HabitDao
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionDao
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.HabitDao
 
-@Database(entities = [Habit::class, HabitCompletion::class], version = 8)
+@Database(entities = [Habit::class, HabitCompletion::class], version = 8, exportSchema = false)
 abstract class HabitTrackerDatabase : RoomDatabase() {
     abstract fun habitDao(): HabitDao
     abstract fun habitCompletionDao(): HabitCompletionDao

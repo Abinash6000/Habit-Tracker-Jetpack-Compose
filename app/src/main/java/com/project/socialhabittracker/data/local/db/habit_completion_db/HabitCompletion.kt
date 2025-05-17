@@ -1,10 +1,10 @@
-package com.project.socialhabittracker.data.db.habit_completion_db
+package com.project.socialhabittracker.data.local.db.habit_completion_db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.project.socialhabittracker.data.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
 import com.project.socialhabittracker.ui.home.convertToDateMonthYear
 import com.project.socialhabittracker.ui.home.convertToMillis
 import java.util.Calendar

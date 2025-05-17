@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.db.habit_completion_db.HabitCompletionRepository
-import com.project.socialhabittracker.data.db.habit_db.Habit
-import com.project.socialhabittracker.data.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionRepository
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
 import com.project.socialhabittracker.ui.habit_report.HabitScores
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

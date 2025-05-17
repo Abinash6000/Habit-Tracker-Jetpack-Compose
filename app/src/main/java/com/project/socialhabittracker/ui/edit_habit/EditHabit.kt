@@ -25,7 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.socialhabittracker.R
-import com.project.socialhabittracker.data.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.db.habit_db.Habit
 import com.project.socialhabittracker.navigation.NavigationDestination
 import com.project.socialhabittracker.ui.AppViewModelProvider
 import com.project.socialhabittracker.ui.home.HabitTrackerTopAppBar
