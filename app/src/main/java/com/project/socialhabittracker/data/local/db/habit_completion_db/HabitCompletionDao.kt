@@ -14,6 +14,9 @@ interface HabitCompletionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(habitCompletion: HabitCompletion)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCompletions(habitCompletions: List<HabitCompletion>)
+
     // delete a completions of particular habit -> maybe not required because auto deleted because this is foreign table
     @Query("DELETE FROM habit_completion WHERE habit_id = :habitId")
     suspend fun deleteAllByHabitId(habitId: Int)
@@ -44,6 +47,9 @@ interface HabitCompletionDao {
 
     @Query("SELECT date FROM habit_completion WHERE habit_id = :habitId ORDER BY date ASC")
     fun getAllDates(habitId: Int): Flow<List<Long>>
+
+    @Query("DELETE FROM habit_completion")
+    suspend fun clearAllCompletions()
 }
 
 data class DateRange(val maxDate: Long, val minDate: Long)

@@ -127,6 +127,7 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                     Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
                         Text(
                             text = date,
+                            fontSize = 14.sp,
                             color = dateBorderStroke
                         )
                         Canvas(
@@ -135,7 +136,7 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                                 .wrapContentSize()) {
                             drawCircle(
                                 color = dateBorderStroke,
-                                radius = 35f,
+                                radius = 37f,
                                 style = Stroke(width = 2f)
                             )
                         }

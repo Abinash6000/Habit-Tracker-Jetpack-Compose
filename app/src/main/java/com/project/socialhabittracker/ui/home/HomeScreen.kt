@@ -1,10 +1,22 @@
 package com.project.socialhabittracker.ui.home
 
+import android.graphics.Paint.Align
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -29,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,15 +51,23 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.project.socialhabittracker.R
 import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
 import com.project.socialhabittracker.navigation.NavigationDestination
 import com.project.socialhabittracker.ui.AppViewModelProvider
 import com.project.socialhabittracker.ui.overall_report.OverallReport
 import com.project.socialhabittracker.ui.settings.Settings
+import com.project.socialhabittracker.ui.settings.SettingsDestination
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 object HomeDestination : NavigationDestination {
@@ -60,11 +81,14 @@ fun HomeScreen(
     navigateToAddHabit: () -> Unit,
     navigateToHabitReport: (Int) -> Unit,
     navigateToEditHabit: (Int) -> Unit,
-    navController: NavHostController,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateToHome: () -> Unit,
+    navigateToSettings: () -> Unit,
+    homeUiState: HomeUiState,
+    deleteHaibt: (Int) -> Unit,
+    upsertCompletion: (HabitCompletion) -> Unit,
+
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val homeUiState by viewModel.homeUiState.collectAsState()
 
     var showProgressDialog by remember { mutableStateOf(false) }
     var completionForDate by remember { mutableStateOf(HabitCompletion(0, convertToMillis(convertToDateMonthYear(Calendar.getInstance().timeInMillis)))) }
@@ -93,11 +117,17 @@ fun HomeScreen(
             BottomBar(
                 tabNum = 0,
                 bottomBarItems = getTabBarItems(),
-                navController = navController
+                navigateToHome = navigateToHome,
+                navigateToSettings = navigateToSettings
             )
         }
     ) { innerPadding ->
-        if (showProgressDialog) {
+
+        val coroutineScope = rememberCoroutineScope()
+
+        AnimatedVisibility (
+            visible = showProgressDialog
+        ) {
             AlertDialog(
                 onDismissRequest = { showProgressDialog = false },
             ) {
@@ -110,7 +140,7 @@ fun HomeScreen(
                     },
                     onConfirm = {
                         showProgressDialog = false
-                        viewModel.upsert(completionForDate)
+                        upsertCompletion(completionForDate)
                     },
                     onCancel = { showProgressDialog = false }
                 )
@@ -119,13 +149,17 @@ fun HomeScreen(
         HomeBody(
             habitInfo = homeUiState.habitsList,
             contentPadding = innerPadding,
-            upsurt = { viewModel.upsert(it) },
+            upsurt = { upsertCompletion(it) },
             showProgressDialog = { showProgressDialog = it },
             dataToUpsertForConfirmClick = { completionForDate = it },
             navigateToHabitReport = { navigateToHabitReport(it) },
             onItemClick = { dropDownItem, habitId ->
                 when (dropDownItem.text) {
-                    "Delete" -> viewModel.deleteHabit(habitId)
+                    "Delete" -> {
+                        coroutineScope.launch {
+                            deleteHaibt(habitId)
+                        }
+                    }
                     "Edit" -> navigateToEditHabit(habitId)
                 }
             }
@@ -143,23 +177,61 @@ fun HomeBody(
     navigateToHabitReport: (Int) -> Unit,
     onItemClick: (DropDownItem, Int) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-            .padding(top = 12.dp, bottom = 12.dp)
-    ) {
-        DatesCard(title = "Habits")
-        HabitList(
-            habitInfo = habitInfo,
-            upsurt = upsurt,
-            showProgressDialog = showProgressDialog,
-            dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
-            navigateToHabitReport = { navigateToHabitReport(it) },
-            onItemClick = onItemClick
-        )
+    AnimatedContent(
+        targetState = habitInfo.isEmpty()
+    ) { state ->
+
+        when(state) {
+            false -> {
+                Column(
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding)
+                        .padding(top = 12.dp, bottom = 12.dp)
+                ) {
+                    DatesCard(title = "Habits")
+                    HabitList(
+                        habitInfo = habitInfo,
+                        upsurt = upsurt,
+                        showProgressDialog = showProgressDialog,
+                        dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
+                        navigateToHabitReport = { navigateToHabitReport(it) },
+                        onItemClick = onItemClick
+                    )
+                }
+            }
+
+            true -> {
+                val composition by rememberLottieComposition(
+
+                    LottieCompositionSpec
+                        .RawRes(R.raw.empty_animation)
+                )
+
+                // to control the animation
+                val progress by animateLottieCompositionAsState(
+                    composition,
+                    iterations = LottieConstants.IterateForever,
+                    isPlaying = true,
+                    speed = 0.5f,
+                    restartOnPlay = false
+                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LottieAnimation(
+                        composition,
+                        progress,
+                        modifier = Modifier
+                            .size(400.dp)
+                            .offset(y = (-44).dp)
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -177,7 +249,7 @@ fun HabitList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        items(items = habitInfo, key = { it.habit.id }) {habitInfo ->
+        items(items = habitInfo, key = { it.habit.id }) { habitInfo ->
             HabitCompletionCard(
                 habitInfo = habitInfo,
                 dropDownItems = listOf(DropDownItem("Edit"), DropDownItem("Delete")),
@@ -185,7 +257,7 @@ fun HabitList(
                 upsert = upsurt,
                 showProgressDialog = showProgressDialog,
                 dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
-                navigateToHabitReport = { navigateToHabitReport(it)}
+                navigateToHabitReport = { navigateToHabitReport(it) }
             )
         }
     }
@@ -200,7 +272,11 @@ fun HabitTrackerTopAppBar(
     navigateUp: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(title) },
+        title = { Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+            )
+        },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -224,14 +300,19 @@ data class TabBarItem(
 
 fun getTabBarItems(): List<TabBarItem> {
     val homeTab = TabBarItem(title = R.string.home, route = HomeDestination.route, selectedIcon = R.drawable.filled_home, unselectedIcon = R.drawable.outlined_home)
-    val overallReportTab = TabBarItem(title = R.string.report, route = OverallReport.route, selectedIcon = R.drawable.filled_bar_chart, unselectedIcon = R.drawable.filled_bar_chart)
-    val settingsTab = TabBarItem(title = R.string.settings, route = Settings.route, selectedIcon = R.drawable.settings_filled, unselectedIcon = R.drawable.outlined_settings)
+//    val overallReportTab = TabBarItem(title = R.string.report, route = OverallReport.route, selectedIcon = R.drawable.filled_bar_chart, unselectedIcon = R.drawable.filled_bar_chart)
+    val settingsTab = TabBarItem(title = R.string.settings, route = SettingsDestination.route, selectedIcon = R.drawable.settings_filled, unselectedIcon = R.drawable.outlined_settings)
 
-    return listOf(homeTab, overallReportTab, settingsTab)
+    return listOf(homeTab, /*overallReportTab,*/ settingsTab)
 }
 
 @Composable
-fun BottomBar(tabNum: Int, bottomBarItems: List<TabBarItem>, navController: NavHostController) {
+fun BottomBar(
+    tabNum: Int,
+    bottomBarItems: List<TabBarItem>,
+    navigateToHome: () -> Unit,
+    navigateToSettings: () -> Unit
+) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(tabNum)
     }
@@ -241,7 +322,10 @@ fun BottomBar(tabNum: Int, bottomBarItems: List<TabBarItem>, navController: NavH
                 selected = selectedTabIndex == index,
                 onClick = {
                     selectedTabIndex = index
-                    navController.navigate(tabBarItem.route)
+                    when(tabBarItem.route) {
+                        HomeDestination.route -> navigateToHome()
+                        SettingsDestination.route -> navigateToSettings()
+                    }
                 },
                 icon = {
                     TabBarIconView(

@@ -13,6 +13,9 @@ interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(habit: Habit)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHabits(habits: List<Habit>)
+
     @Update
     suspend fun update(habit: Habit)
 
@@ -24,4 +27,7 @@ interface HabitDao {
 
     @Query("SELECT * FROM habits ORDER BY name ASC")
     fun getAllHabits(): Flow<List<Habit>>
+
+    @Query("DELETE FROM habits")
+    suspend fun clearAllHabits()
 }

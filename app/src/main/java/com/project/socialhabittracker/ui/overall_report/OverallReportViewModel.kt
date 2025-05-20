@@ -57,9 +57,15 @@ class OverallReportViewModel(
                 }[0]
 
                 if(currHabit.type.equals("measurable", true)) {
-                    if(habitCompletion.progressValue < currHabit.targetCount) perfectDay = false
+                    if(habitCompletion.progressValue < currHabit.targetCount) {
+                        perfectDay = false
+                        break
+                    }
                 } else {
-                    if(!habitCompletion.isCompleted) perfectDay = false
+                    if(!habitCompletion.isCompleted) {
+                        perfectDay = false
+                        break
+                    }
                 }
             }
 

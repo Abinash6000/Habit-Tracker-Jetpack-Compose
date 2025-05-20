@@ -35,7 +35,8 @@ object OverallReport : NavigationDestination {
 @Composable
 fun OverallReport(
     viewModel: OverallReportViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navController: NavHostController
+    navigateToHome: () -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val reportScores = viewModel.reportScore
@@ -53,7 +54,8 @@ fun OverallReport(
             BottomBar(
                 tabNum = 1,
                 bottomBarItems = getTabBarItems(),
-                navController = navController
+                navigateToHome = navigateToHome,
+                navigateToSettings = navigateToSettings,
             )
         }
     ) { innerPadding ->

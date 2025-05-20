@@ -90,4 +90,6 @@ dependencies {
     // Optional - Google Play services provider for Android 13 and below
     implementation(libs.androidx.credentials.play.services.auth)
 
+    // lottie animation
+    implementation(libs.lottie.compose)
 }
