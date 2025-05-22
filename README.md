@@ -1,4 +1,4 @@
-# 📈 Habit Tracker App
+# 📈 Habitly
 
 Track your habits, measure your progress, and become the disciplined machine you were born to be. Whether you're trying to drink 2L of water a day or do 100 pushups, this app has your back.
 
@@ -20,9 +20,9 @@ Track your habits, measure your progress, and become the disciplined machine you
 
 > *Because words can't flex like visuals do.*
 
-| Home Screen                          | Habit Detail                             | Graph & Metrics                        |
+| Home Screen                          | Settings                             | Graph & Metrics                        |
 | ------------------------------------ | ---------------------------------------- | -------------------------------------- |
-| ![Home Screen](screenshots/home.png) | ![Detail Screen](screenshots/detail.png) | ![Graph Screen](screenshots/graph.png) |
+| <img src="https://github.com/user-attachments/assets/c8289eab-88f1-472a-ba08-efd82d098529" alt="Image description" width="300"/> | <img src="https://github.com/user-attachments/assets/be78f3a9-6f94-48ba-89a3-5dbe909b16ce" alt="Image description" width="300"/> | <img src="https://github.com/user-attachments/assets/134950a7-9819-4b41-aca1-0bd20ac97b99" alt="Image description" width="300"/> |
 
 ---
 
