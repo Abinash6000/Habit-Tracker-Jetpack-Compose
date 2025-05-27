@@ -4,8 +4,8 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.habit_db.Habit
 import kotlinx.coroutines.tasks.await
 
 class FirestoreService {
@@ -37,6 +37,7 @@ class FirestoreService {
     }
 
     suspend fun uploadHabits(habits: List<Habit>) {
+
         try {
             val habitsRef = userDoc().collection("habits")
             habits.forEach { habit ->

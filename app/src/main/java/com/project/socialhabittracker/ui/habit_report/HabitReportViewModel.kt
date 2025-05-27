@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionRepository
-import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletionRepository
+import com.project.socialhabittracker.data.local.habit_db.HabitRepository
 import com.project.socialhabittracker.ui.home.HabitInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

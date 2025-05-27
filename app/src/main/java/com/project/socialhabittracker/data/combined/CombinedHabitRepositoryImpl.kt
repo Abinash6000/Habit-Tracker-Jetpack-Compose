@@ -1,8 +1,8 @@
 package com.project.socialhabittracker.data.combined
 
 import android.util.Log
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletionDao
-import com.project.socialhabittracker.data.local.db.habit_db.HabitDao
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletionDao
+import com.project.socialhabittracker.data.local.habit_db.HabitDao
 import com.project.socialhabittracker.data.remote.firestore.FirestoreService
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -11,12 +11,6 @@ class CombinedHabitRepositoryImpl(
     private val habitCompletionDao: HabitCompletionDao,
     private val firestoreService: FirestoreService
 ) : CombinedHabitRepository {
-
-    // I think this realtime adding of habits and completions is not needed
-    // because when the user opens the app in offline mode it'll be difficult
-    // to upload to firestore at the same time from combined repository
-    // so just create syncFromCloud and syncToCloud functions
-    // which the user can do manually from the settings
 
     // On login and when manually clicks in settings
     override suspend fun syncFromCloud() {

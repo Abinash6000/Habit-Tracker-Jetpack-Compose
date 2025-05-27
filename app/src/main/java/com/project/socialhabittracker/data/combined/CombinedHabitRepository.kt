@@ -1,6 +1,6 @@
 package com.project.socialhabittracker.data.combined
 
-import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.habit_db.Habit
 
 interface CombinedHabitRepository {
 //    suspend fun addHabit(habit: Habit)

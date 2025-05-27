@@ -1,8 +1,8 @@
 package com.project.socialhabittracker.ui.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +23,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -42,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
@@ -60,11 +63,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.ui.theme.spacing
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -73,11 +76,14 @@ import java.util.Locale
 @Composable
 fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }, title: String) {
     Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+        shape = RoundedCornerShape(MaterialTheme.spacing.medium),
+        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.mediumLarge),
         modifier = Modifier
             .wrapContentSize()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .padding(
+                horizontal = MaterialTheme.spacing.smallMedium,
+                vertical = MaterialTheme.spacing.small
+            )
     ) {
         val dateBorderStroke = colorScheme.secondary
         Row(
@@ -89,7 +95,7 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                 horizontalArrangement = Arrangement.Start,
                 modifier = Modifier
                     .wrapContentWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = MaterialTheme.spacing.small)
             ) {
                 Text(
                     text = title,
@@ -99,9 +105,9 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .width(140.dp)
-                        .padding(start = 8.dp)
+                        .padding(start = MaterialTheme.spacing.small)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                 Canvas(
                     modifier = Modifier
                         .height(15.dp)
@@ -114,7 +120,7 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                         strokeWidth = 1.5.dp.toPx()
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -124,7 +130,10 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                     .height(35.dp)
             ) {
                 for (date in datesList) {
-                    Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.wrapContentSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
                             text = date,
                             fontSize = 14.sp,
@@ -133,7 +142,8 @@ fun DatesCard(datesList: List<String> = lastFiveDates().map { it.split("-")[2] }
                         Canvas(
                             Modifier
                                 .padding(2.dp)
-                                .wrapContentSize()) {
+                                .wrapContentSize()
+                        ) {
                             drawCircle(
                                 color = dateBorderStroke,
                                 radius = 37f,
@@ -171,7 +181,6 @@ fun HabitCompletionCard(
         completion.date
     }
 
-    // variables for showing context menu
     var isContextMenuVisible by rememberSaveable {
         mutableStateOf(false)
     }
@@ -184,11 +193,14 @@ fun HabitCompletionCard(
     val density = LocalDensity.current
 
     Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        shape = RoundedCornerShape(MaterialTheme.spacing.medium),
+        elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.spacing.small),
         modifier = Modifier
             .wrapContentSize()
-            .padding(vertical = 4.dp, horizontal = 12.dp)
+            .padding(
+                vertical = MaterialTheme.spacing.extraSmall,
+                horizontal = MaterialTheme.spacing.smallMedium
+            )
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
             }
@@ -226,9 +238,9 @@ fun HabitCompletionCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .width(140.dp)
-                            .padding(start = 8.dp)
+                            .padding(start = MaterialTheme.spacing.small)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.extraSmall))
                     Canvas(
                         modifier = Modifier
                             .height(15.dp)
@@ -241,7 +253,7 @@ fun HabitCompletionCard(
                             strokeWidth = 1.dp.toPx()
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(MaterialTheme.spacing.small))
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -268,8 +280,9 @@ fun HabitCompletionCard(
                         }
 
                         Box(
-                            modifier = Modifier.clickable(
-                                onClick = {
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(MaterialTheme.spacing.medium))
+                                .clickable(onClick = {
                                     if (habitInfo.habit.type.equals("measurable", true)) {
                                         showProgressDialog(true)
                                         dataToUpsertForConfirmClick(completionForDate)
@@ -281,20 +294,24 @@ fun HabitCompletionCard(
                                         )
                                     }
                                 }
-                            )
+                                )
                         ) {
                             if (habitInfo.habit.type.equals("yes or no", true)) {
-                                if (completionForDate.isCompleted) {
-                                    Icon(
-                                        Icons.Default.Check,
-                                        contentDescription = "Completed",
-                                        tint = colorScheme.primary
-                                    )
-                                } else {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Not Completed",
-                                    )
+                                AnimatedContent(
+                                    targetState = completionForDate.isCompleted
+                                ) { state ->
+                                    if (state) {
+                                        Icon(
+                                            Icons.Rounded.Check,
+                                            contentDescription = "Completed",
+                                            tint = colorScheme.primary
+                                        )
+                                    } else {
+                                        Icon(
+                                            Icons.Rounded.Close,
+                                            contentDescription = "Not Completed"
+                                        )
+                                    }
                                 }
                             } else {
                                 Column(
@@ -304,12 +321,13 @@ fun HabitCompletionCard(
                                     Text(
                                         text = completionForDate.progressValue,
                                         fontSize = 16.sp,
-                                        color = if(completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified
+                                        color = if (completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified
                                     )
                                     Text(
                                         text = habitInfo.habit.unit,
                                         fontSize = 8.sp,
-                                        color = if(completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified
+                                        color = if (completionForDate.progressValue >= habitInfo.habit.targetCount) colorScheme.primary else Color.Unspecified,
+                                        modifier = Modifier.padding(horizontal = MaterialTheme.spacing.small)
                                     )
                                 }
                             }
@@ -336,7 +354,6 @@ fun HabitCompletionCard(
             }
         }
     }
-
 }
 
 @Composable
@@ -350,7 +367,7 @@ fun ProgressDialog(
     Surface(
         modifier = Modifier
             .wrapContentSize()
-            .padding(16.dp),
+            .padding(MaterialTheme.spacing.medium),
         shape = MaterialTheme.shapes.extraLarge,
         border = BorderStroke(1.dp, Color.Black)
     ) {
@@ -361,7 +378,6 @@ fun ProgressDialog(
             val focusRequester = remember { FocusRequester() }
             val keyboard = LocalSoftwareKeyboardController.current
 
-            // Progress TextField
             BasicTextField(
                 value = TextFieldValue(
                     text = progressValue,
@@ -372,11 +388,18 @@ fun ProgressDialog(
                 },
                 singleLine = true,
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 16.dp)
+                    .padding(
+                        horizontal = MaterialTheme.spacing.small,
+                        vertical = MaterialTheme.spacing.medium
+                    )
                     .wrapContentSize()
                     .align(Alignment.CenterHorizontally)
                     .focusRequester(focusRequester),
-                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 24.sp, color = color),
+                textStyle = TextStyle(
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    color = color
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 keyboardActions = KeyboardActions(
                     onDone = {
@@ -389,15 +412,17 @@ fun ProgressDialog(
             )
             LaunchedEffect(focusRequester) {
                 focusRequester.requestFocus()
-                delay(100) // Make sure you have delay here
+                delay(100)
                 keyboard?.show()
             }
-            Canvas(modifier = Modifier
-                .width(160.dp)
-                .padding(horizontal = 8.dp)) {
+            Canvas(
+                modifier = Modifier
+                    .width(160.dp)
+                    .padding(horizontal = MaterialTheme.spacing.small)
+            ) {
                 drawLine(
                     color = color,
-                    start = Offset(0f,0f),
+                    start = Offset(0f, 0f),
                     end = Offset(size.width, 0f),
                     strokeWidth = 2f
                 )
@@ -405,48 +430,35 @@ fun ProgressDialog(
             Row(
                 modifier = Modifier
                     .width(140.dp)
-                    .padding(8.dp),
+                    .padding(MaterialTheme.spacing.small),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Cancel icon (cross)
                 IconButton(onClick = onCancel) {
                     Icon(
-                        imageVector = Icons.Default.Close, // Use a cross icon
+                        imageVector = Icons.Default.Close,
                         contentDescription = "Cancel"
                     )
                 }
-                Canvas(modifier = Modifier
-                    .height(30.dp)
-                    .padding(horizontal = 8.dp)) {
+                Canvas(
+                    modifier = Modifier
+                        .height(30.dp)
+                        .padding(horizontal = MaterialTheme.spacing.small)
+                ) {
                     drawLine(
                         color = color,
-                        start = Offset(0f,0f),
+                        start = Offset(0f, 0f),
                         end = Offset(0f, size.height),
                         strokeWidth = 2f
                     )
                 }
-                // Confirm icon (check)
                 IconButton(onClick = onConfirm) {
                     Icon(
-                        imageVector = Icons.Default.Check, // Use a check icon
+                        imageVector = Icons.Default.Check,
                         contentDescription = "Confirm"
                     )
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewProgressDialog() {
-    var progress by remember { mutableStateOf("") }
-
-    ProgressDialog(
-        progressValue = progress,
-        onValueChange = { newValue -> progress = newValue },
-        onConfirm = { /* Handle confirmation */ },
-        onCancel = { /* Handle cancellation */ },
-    )
 }

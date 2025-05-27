@@ -27,7 +27,8 @@ import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.project.socialhabittracker.data.remote.auth.AuthViewModel
-import com.project.socialhabittracker.ui.AppViewModelProvider
+import com.project.socialhabittracker.AppViewModelProvider
+import com.project.socialhabittracker.MainViewModel
 import com.project.socialhabittracker.ui.add_habit.AddHabit
 import com.project.socialhabittracker.ui.add_habit.AddHabitDestination
 import com.project.socialhabittracker.ui.auth.LoginDestination
@@ -41,10 +42,10 @@ import com.project.socialhabittracker.ui.habit_report.HabitReportDestination
 import com.project.socialhabittracker.ui.home.HomeDestination
 import com.project.socialhabittracker.ui.home.HomeScreen
 import com.project.socialhabittracker.ui.home.HomeViewModel
-import com.project.socialhabittracker.ui.overall_report.OverallReport
 import com.project.socialhabittracker.ui.settings.Settings
 import com.project.socialhabittracker.ui.settings.SettingsDestination
 import com.project.socialhabittracker.ui.settings.SettingsViewModel
+import com.project.socialhabittracker.ui.theme.AppTheme
 import com.project.socialhabittracker.utils.Extensions
 import kotlinx.coroutines.launch
 
@@ -69,20 +70,20 @@ fun HabitTrackerNavHost(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideIntoContainer(
-                    animationSpec = tween(1000, easing = EaseIn),
+                    animationSpec = tween(300, easing = EaseIn),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
             },
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideOutOfContainer(
-                    animationSpec = tween(1000, easing = EaseOut),
+                    animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
             }
@@ -107,20 +108,20 @@ fun HabitTrackerNavHost(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideIntoContainer(
-                    animationSpec = tween(1000, easing = EaseIn),
+                    animationSpec = tween(300, easing = EaseIn),
                     towards = AnimatedContentTransitionScope.SlideDirection.Up
                 )
             },
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideOutOfContainer(
-                    animationSpec = tween(1000, easing = EaseOut),
+                    animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.Down
                 )
             }
@@ -138,9 +139,9 @@ fun HabitTrackerNavHost(
             }),
             enterTransition = {
                 scaleIn(
-                    animationSpec = tween(1000),
+                    animationSpec = tween(300),
                     initialScale = 0.9f
-                ) + fadeIn(tween(1000))
+                ) + fadeIn(tween(300))
             }
         ) {
             HabitReport(
@@ -155,10 +156,10 @@ fun HabitTrackerNavHost(
                 type = NavType.IntType
             }),
             enterTransition = {
-                fadeIn( animationSpec = tween(1000)) +
+                fadeIn( animationSpec = tween(300)) +
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(1000)
+                    animationSpec = tween(300)
                 )
             }
         ) {
@@ -168,38 +169,33 @@ fun HabitTrackerNavHost(
             )
         }
 
-        composable(route = OverallReport.route) {
-            OverallReport(
-                navigateToHome = {  },
-                navigateToSettings = {  }
-            )
-        }
-
         composable(
             route = SettingsDestination.route,
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideIntoContainer(
-                    animationSpec = tween(1000, easing = EaseIn),
+                    animationSpec = tween(300, easing = EaseIn),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
             },
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideOutOfContainer(
-                    animationSpec = tween(1000, easing = EaseOut),
+                    animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
             }
         ) {
             val settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
             val loadingState by settingsViewModel.loadingState.collectAsStateWithLifecycle()
+
+            val mainViewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory)
 
             val coroutineScope = rememberCoroutineScope()
 
@@ -214,6 +210,15 @@ fun HabitTrackerNavHost(
                             }
                         }
                     }
+                },
+                onThemeChanged = {
+                    val appTheme = when(it) {
+                        0 -> AppTheme.Blue
+                        1 -> AppTheme.Green
+                        2 -> AppTheme.Red
+                        else -> AppTheme.Blue
+                    }
+                    mainViewModel.saveTheme(appTheme)
                 },
                 onRateClick = {},
                 onSyncToCloud = {
@@ -237,20 +242,20 @@ fun HabitTrackerNavHost(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideIntoContainer(
-                    animationSpec = tween(1000, easing = EaseIn),
+                    animationSpec = tween(300, easing = EaseIn),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
             },
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideOutOfContainer(
-                    animationSpec = tween(1000, easing = EaseOut),
+                    animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
             }
@@ -305,20 +310,20 @@ fun HabitTrackerNavHost(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideIntoContainer(
-                    animationSpec = tween(1000, easing = EaseIn),
+                    animationSpec = tween(300, easing = EaseIn),
                     towards = AnimatedContentTransitionScope.SlideDirection.Start
                 )
             },
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(
-                        1000, easing = LinearEasing
+                        300, easing = LinearEasing
                     )
                 ) + slideOutOfContainer(
-                    animationSpec = tween(1000, easing = EaseOut),
+                    animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
             }

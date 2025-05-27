@@ -1,72 +1,50 @@
 package com.project.socialhabittracker.ui.home
 
-import android.graphics.Paint.Align
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.background
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.project.socialhabittracker.R
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletion
 import com.project.socialhabittracker.navigation.NavigationDestination
-import com.project.socialhabittracker.ui.AppViewModelProvider
-import com.project.socialhabittracker.ui.overall_report.OverallReport
-import com.project.socialhabittracker.ui.settings.Settings
-import com.project.socialhabittracker.ui.settings.SettingsDestination
+import com.project.socialhabittracker.ui.theme.spacing
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -87,11 +65,18 @@ fun HomeScreen(
     deleteHaibt: (Int) -> Unit,
     upsertCompletion: (HabitCompletion) -> Unit,
 
-) {
+    ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showProgressDialog by remember { mutableStateOf(false) }
-    var completionForDate by remember { mutableStateOf(HabitCompletion(0, convertToMillis(convertToDateMonthYear(Calendar.getInstance().timeInMillis)))) }
+    var completionForDate by remember {
+        mutableStateOf(
+            HabitCompletion(
+                0,
+                convertToMillis(convertToDateMonthYear(Calendar.getInstance().timeInMillis))
+            )
+        )
+    }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -104,8 +89,9 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToAddHabit,
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_large))
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -125,7 +111,7 @@ fun HomeScreen(
 
         val coroutineScope = rememberCoroutineScope()
 
-        AnimatedVisibility (
+        AnimatedVisibility(
             visible = showProgressDialog
         ) {
             AlertDialog(
@@ -133,7 +119,7 @@ fun HomeScreen(
             ) {
                 var valueChanged by remember { mutableStateOf(false) }
                 ProgressDialog(
-                    progressValue = if(valueChanged) completionForDate.progressValue else "",
+                    progressValue = if (valueChanged) completionForDate.progressValue else "",
                     onValueChange = {
                         completionForDate = completionForDate.copy(progressValue = it)
                         valueChanged = true
@@ -160,6 +146,7 @@ fun HomeScreen(
                             deleteHaibt(habitId)
                         }
                     }
+
                     "Edit" -> navigateToEditHabit(habitId)
                 }
             }
@@ -170,7 +157,7 @@ fun HomeScreen(
 @Composable
 fun HomeBody(
     habitInfo: List<HabitInfo>,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    contentPadding: PaddingValues = PaddingValues(MaterialTheme.spacing.default),
     upsurt: (HabitCompletion) -> Unit,
     showProgressDialog: (Boolean) -> Unit,
     dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
@@ -180,8 +167,7 @@ fun HomeBody(
     AnimatedContent(
         targetState = habitInfo.isEmpty()
     ) { state ->
-
-        when(state) {
+        when (state) {
             false -> {
                 Column(
                     verticalArrangement = Arrangement.Top,
@@ -189,7 +175,6 @@ fun HomeBody(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(contentPadding)
-                        .padding(top = 12.dp, bottom = 12.dp)
                 ) {
                     DatesCard(title = "Habits")
                     HabitList(
@@ -204,151 +189,43 @@ fun HomeBody(
             }
 
             true -> {
-                val composition by rememberLottieComposition(
 
-                    LottieCompositionSpec
-                        .RawRes(R.raw.empty_animation)
-                )
+                var show by remember { mutableStateOf(false) }
 
-                // to control the animation
-                val progress by animateLottieCompositionAsState(
-                    composition,
-                    iterations = LottieConstants.IterateForever,
-                    isPlaying = true,
-                    speed = 0.5f,
-                    restartOnPlay = false
-                )
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    LottieAnimation(
+                LaunchedEffect(Unit) {
+                    delay(250L)
+                    show = true
+                }
+
+                if(show) {
+                    val composition by rememberLottieComposition(
+
+                        LottieCompositionSpec
+                            .RawRes(R.raw.empty_animation)
+                    )
+
+                    // to control the animation
+                    val progress by animateLottieCompositionAsState(
                         composition,
-                        progress,
-                        modifier = Modifier
-                            .size(400.dp)
-                            .offset(y = (-44).dp)
+                        iterations = LottieConstants.IterateForever,
+                        isPlaying = true,
+                        speed = 0.5f,
+                        restartOnPlay = false
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HabitList(
-    habitInfo: List<HabitInfo>,
-    upsurt: (HabitCompletion) -> Unit,
-    showProgressDialog: (Boolean) -> Unit,
-    dataToUpsertForConfirmClick: (HabitCompletion) -> Unit,
-    navigateToHabitReport: (Int) -> Unit,
-    onItemClick: (DropDownItem, Int) -> Unit
-) {
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(items = habitInfo, key = { it.habit.id }) { habitInfo ->
-            HabitCompletionCard(
-                habitInfo = habitInfo,
-                dropDownItems = listOf(DropDownItem("Edit"), DropDownItem("Delete")),
-                onItemClick = { onItemClick(it, habitInfo.habit.id) },
-                upsert = upsurt,
-                showProgressDialog = showProgressDialog,
-                dataToUpsertForConfirmClick = dataToUpsertForConfirmClick,
-                navigateToHabitReport = { navigateToHabitReport(it) }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HabitTrackerTopAppBar(
-    title: String,
-    canNavigateBack: Boolean,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    navigateUp: () -> Unit = {}
-) {
-    CenterAlignedTopAppBar(
-        title = { Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
-            )
-        },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button)
-                    )
-                }
-            }
-        }
-    )
-}
-
-data class TabBarItem(
-    val title: Int,
-    val route: String,
-    val selectedIcon: Int,
-    val unselectedIcon: Int
-)
-
-fun getTabBarItems(): List<TabBarItem> {
-    val homeTab = TabBarItem(title = R.string.home, route = HomeDestination.route, selectedIcon = R.drawable.filled_home, unselectedIcon = R.drawable.outlined_home)
-//    val overallReportTab = TabBarItem(title = R.string.report, route = OverallReport.route, selectedIcon = R.drawable.filled_bar_chart, unselectedIcon = R.drawable.filled_bar_chart)
-    val settingsTab = TabBarItem(title = R.string.settings, route = SettingsDestination.route, selectedIcon = R.drawable.settings_filled, unselectedIcon = R.drawable.outlined_settings)
-
-    return listOf(homeTab, /*overallReportTab,*/ settingsTab)
-}
-
-@Composable
-fun BottomBar(
-    tabNum: Int,
-    bottomBarItems: List<TabBarItem>,
-    navigateToHome: () -> Unit,
-    navigateToSettings: () -> Unit
-) {
-    var selectedTabIndex by rememberSaveable {
-        mutableIntStateOf(tabNum)
-    }
-    NavigationBar {
-        bottomBarItems.forEachIndexed { index, tabBarItem ->
-            NavigationBarItem(
-                selected = selectedTabIndex == index,
-                onClick = {
-                    selectedTabIndex = index
-                    when(tabBarItem.route) {
-                        HomeDestination.route -> navigateToHome()
-                        SettingsDestination.route -> navigateToSettings()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        LottieAnimation(
+                            composition,
+                            progress,
+                            modifier = Modifier
+                                .size(400.dp)
+                                .offset(y = (-44).dp)
+                        )
                     }
-                },
-                icon = {
-                    TabBarIconView(
-                        isSelected = selectedTabIndex == index,
-                        selectedIcon = ImageVector.vectorResource(tabBarItem.selectedIcon),
-                        unselectedIcon = ImageVector.vectorResource(tabBarItem.unselectedIcon),
-                        title = stringResource(id = tabBarItem.title)
-                    )
-                },
-                label = {Text(text = stringResource(tabBarItem.title))})
+                }
+            }
         }
     }
-}
-
-@Composable
-fun TabBarIconView(
-    isSelected: Boolean,
-    selectedIcon: ImageVector,
-    unselectedIcon: ImageVector,
-    title: String
-) {
-    Icon(
-        imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
-        contentDescription = title
-    )
 }

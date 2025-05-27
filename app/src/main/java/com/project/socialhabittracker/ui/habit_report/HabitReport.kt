@@ -47,14 +47,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.socialhabittracker.R
-import com.project.socialhabittracker.data.local.db.habit_completion_db.HabitCompletion
-import com.project.socialhabittracker.data.local.db.habit_db.Habit
+import com.project.socialhabittracker.data.local.habit_completion_db.HabitCompletion
+import com.project.socialhabittracker.data.local.habit_db.Habit
 import com.project.socialhabittracker.navigation.NavigationDestination
-import com.project.socialhabittracker.ui.AppViewModelProvider
+import com.project.socialhabittracker.AppViewModelProvider
 import com.project.socialhabittracker.ui.home.HabitInfo
 import com.project.socialhabittracker.ui.home.HabitTrackerTopAppBar
 import com.project.socialhabittracker.ui.home.convertToDate
 import com.project.socialhabittracker.ui.home.convertToMonthYear
+import com.project.socialhabittracker.ui.theme.spacing
 
 object HabitReportDestination : NavigationDestination {
     override val route = "report"
@@ -120,12 +121,12 @@ fun HabitReportBody(
     ) {
         NoteCard(
             note = habitReportUiState.habit.note,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(MaterialTheme.spacing.smallMedium)
         )
         ProgressChartCard(
             habitCompletionList = habitReportUiState.habitCompletionDetails,
             isMeasurable = habitReportUiState.habit.type == "Measurable",
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(MaterialTheme.spacing.smallMedium)
         )
         ArrangedScoreCards(
             perfectDaysScore = habitReportScores.perfectDaysScore,
@@ -134,7 +135,7 @@ fun HabitReportBody(
             percentageScore = habitReportScores.percentageScore,
             overallScore = habitReportScores.overallScore,
             missedDaysScore = habitReportScores.missedDaysScore,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(MaterialTheme.spacing.smallMedium)
         )
     }
 }
@@ -201,9 +202,9 @@ fun ProgressChartCard(
                 state = listState,
                 modifier = Modifier
                     .wrapContentWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(MaterialTheme.spacing.small),
                 verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
             ) {
                 items(habitCompletionList) { habitCompletion ->
                     BarItem(
@@ -224,7 +225,7 @@ fun BarItem(
     maxProgressValue: Float
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.extraSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxHeight()  // Fill the available height
@@ -255,14 +256,20 @@ fun BarItem(
             Icon(
                 imageVector = if(habitCompletion.isCompleted) Icons.Default.Check else Icons.Default.Clear,
                 contentDescription = if(habitCompletion.isCompleted) "Checked" else "Unchecked",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(MaterialTheme.spacing.medium)
             )
         }
         Box(
             modifier = Modifier
-                .width(16.dp)
+                .width(MaterialTheme.spacing.medium)
                 .height(normalizedHeight.dp)
-                .clip(RoundedCornerShape(4.dp, 4.dp, 0.dp, 0.dp))
+                .clip(
+                    RoundedCornerShape(
+                        MaterialTheme.spacing.extraSmall,
+                        MaterialTheme.spacing.extraSmall,
+                        MaterialTheme.spacing.default,
+                        MaterialTheme.spacing.default)
+                )
                 .background(MaterialTheme.colorScheme.primary)
         )
         Text(
@@ -330,14 +337,14 @@ fun ScoreCard(
 ) {
     Card(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(MaterialTheme.spacing.extraSmall)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small),
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(MaterialTheme.spacing.small)
         ) {
             Text(
                 text = title,
@@ -364,6 +371,6 @@ fun HabitReportBodyPreview() {
     HabitReportBody(
         habitReportUiState = HabitInfo(habit = Habit(name = "Swim")),
         habitReportScores = HabitScores(),
-        innerPadding = PaddingValues(0.dp)
+        innerPadding = PaddingValues(MaterialTheme.spacing.default)
     )
 }

@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.project.socialhabittracker.data.local.db.habit_db.Habit
-import com.project.socialhabittracker.data.local.db.habit_db.HabitRepository
+import com.project.socialhabittracker.data.local.habit_db.Habit
+import com.project.socialhabittracker.data.local.habit_db.HabitRepository
 
 class AddHabitViewModel(private val habitRepository: HabitRepository) : ViewModel() {
     var addHabitUiState by mutableStateOf(AddHabitUiState())

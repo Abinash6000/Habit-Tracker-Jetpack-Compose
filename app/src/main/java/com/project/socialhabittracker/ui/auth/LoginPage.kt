@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.socialhabittracker.R
 import com.project.socialhabittracker.navigation.NavigationDestination
+import com.project.socialhabittracker.ui.theme.spacing
 
 object LoginDestination : NavigationDestination {
     override val route = "login"
@@ -43,7 +44,7 @@ fun LoginPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(MaterialTheme.spacing.large),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -52,7 +53,7 @@ fun LoginPage(
             style = MaterialTheme.typography.displayLarge
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraLarge))
 
         OutlinedTextField(
             value = email,
@@ -65,7 +66,7 @@ fun LoginPage(
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         OutlinedTextField(
             value = password,
@@ -79,7 +80,7 @@ fun LoginPage(
             )
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.large))
 
         Button(
             onClick = onLoginClick,
@@ -90,8 +91,8 @@ fun LoginPage(
                 CircularProgressIndicator(
                     color = Color.White,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(end = 8.dp),
+                        .size(MaterialTheme.spacing.mediumLarge)
+                        .padding(end = MaterialTheme.spacing.small),
                     strokeWidth = 2.dp
                 )
             } else {
@@ -99,7 +100,7 @@ fun LoginPage(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
 
         TextButton(onClick = onSignUpClick) {
             Text("Don't have an account? Sign up")
